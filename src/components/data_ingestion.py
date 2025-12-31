@@ -7,8 +7,6 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 
-from src.components.data_transformation import DataTransformation
-from src.components.model_trainer import ModelTrainer
 
 @dataclass
 class DataIngestionConfig:
@@ -25,6 +23,7 @@ class DataIngestion:
         try:
             # 1. READING RAW DATA
             logging.info("Reading the 3 raw datasets")
+
             df_clinical = pd.read_csv('notebook/data/X_train/clinical_train.csv')
             df_molecular = pd.read_csv('notebook/data/X_train/molecular_train.csv')
             df_target = pd.read_csv('notebook/data/target_train.csv')
@@ -62,27 +61,3 @@ class DataIngestion:
         except Exception as e:
             raise CustomException(e, sys)
 
-# --- PIPELINE EXECUTION BLOCK ---
-if __name__ == "__main__":
-    try:
-        # 1. Ingestion
-        obj = DataIngestion()
-        train_data, test_data = obj.initiate_data_ingestion()
-
-        # 2. Transformation
-        data_transformation = DataTransformation()
-        train_arr, test_arr, _ = data_transformation.initiate_data_transformation(train_data, test_data)
-
-        # 3. Training
-        model_trainer = ModelTrainer()
-        score = model_trainer.initiate_model_trainer(train_arr, test_arr)
-
-        # 4. PRINTING THE RESULT
-        print("\n" + "="*50)
-        print(f" >> PIPELINE SUCCESSFUL")
-        print(f" >> Final C-Index Score: {score:.4f}")
-        print("="*50 + "\n")
-
-    except Exception as e:
-        logging.info("Custom Exception")
-        raise CustomException(e, sys)
